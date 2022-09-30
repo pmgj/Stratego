@@ -1,0 +1,26 @@
+h1, p {
+    text-align: center;
+}
+#tabuleiro {
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+#tabuleiro td {
+    border: 1px solid black;
+    width: 49px;
+    height: 49px;
+    text-align: center;
+}
+img {
+    width: 45px;
+    height: 45px;
+}
+#piecesCaptured, div, #piecesLost {
+    float: left;
+}
+#piecesCaptured, #piecesLost {
+    width: 24%;
+}
+div {
+    width: 50%;
+}
