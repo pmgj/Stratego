@@ -147,20 +147,8 @@ public class StrategoTest {
                 }
                 try {
                         c.move(Player.PLAYER1, new Cell(6, 4), new Cell(5, 4));
-                } catch (Exception ex) {
-                        Assertions.fail("Move piece.");
-                }
-                try {
                         c.move(Player.PLAYER2, new Cell(3, 1), new Cell(5, 1));
-                } catch (Exception ex) {
-                        Assertions.fail("Scout run and attack.");
-                }
-                try {
                         c.move(Player.PLAYER1, new Cell(7, 1), new Cell(6, 1));
-                } catch (Exception ex) {
-                        Assertions.fail("Move piece.");
-                }
-                try {
                         c.move(Player.PLAYER2, new Cell(2, 1), new Cell(3, 1));
                         c.move(Player.PLAYER1, new Cell(5, 1), new Cell(4, 1));
                         c.move(Player.PLAYER2, new Cell(3, 1), new Cell(4, 1));
