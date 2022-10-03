@@ -1,62 +1,240 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Stratego</title>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" type="text/css" href="index.css" />
-        <link rel="icon" type="image/svg" href="images/favicon.png" />
-        <script src="Cell.js"></script>
-        <script src="index.js"></script>
-    </head>
-    <body>
-        <h1>Stratego</h1>
-        <table id="piecesCaptured">
-            <caption>Pieces captured</caption>
-            <tbody>
-                <tr data-piece="MARSHAL"><td><img src="images/stratego-marshal.svg" alt="Marechal" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="GENERAL"><td><img src="images/stratego-general.svg" alt="General" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="COLONEL"><td><img src="images/stratego-colonel.svg" alt="Coronel" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="MAJOR"><td><img src="images/stratego-major.svg" alt="Major" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="CAPTAIN"><td><img src="images/stratego-captain.svg" alt="Capitão" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="LIEUTENANT"><td><img src="images/stratego-lieutenant.svg" alt="Tenente" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="SERGEANT"><td><img src="images/stratego-sergeant.svg" alt="Sargento" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="MINER"><td><img src="images/stratego-miner.svg" alt="Cabo Mineiro" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="SCOUT"><td><img src="images/stratego-scout.svg" alt="Soldado" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="SPY"><td><img src="images/stratego-spy.svg" alt="Espião" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="BOMB"><td><img src="images/stratego-bomb.svg" alt="Bomba" /></td><td><span></span>/<span></span></td></tr>
-            </tbody>
+
+<head>
+    <title>Stratego</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <link rel="icon" type="image/svg" href="images/favicon.png" />
+    <script type="module" src="GUI.js"></script>
+</head>
+
+<body>
+    <h1>Stratego</h1>
+    <table id="piecesCaptured">
+        <caption>Pieces captured</caption>
+        <tbody>
+            <tr data-piece="MARSHAL">
+                <td><img src="images/stratego-marshal.svg" alt="Marechal" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="GENERAL">
+                <td><img src="images/stratego-general.svg" alt="General" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="COLONEL">
+                <td><img src="images/stratego-colonel.svg" alt="Coronel" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="MAJOR">
+                <td><img src="images/stratego-major.svg" alt="Major" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="CAPTAIN">
+                <td><img src="images/stratego-captain.svg" alt="Capitão" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="LIEUTENANT">
+                <td><img src="images/stratego-lieutenant.svg" alt="Tenente" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="SERGEANT">
+                <td><img src="images/stratego-sergeant.svg" alt="Sargento" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="MINER">
+                <td><img src="images/stratego-miner.svg" alt="Cabo Mineiro" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="SCOUT">
+                <td><img src="images/stratego-scout.svg" alt="Soldado" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="SPY">
+                <td><img src="images/stratego-spy.svg" alt="Espião" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="BOMB">
+                <td><img src="images/stratego-bomb.svg" alt="Bomba" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <table id="tabuleiro">
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
         </table>
-        <div>
-            <table id="tabuleiro">
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            </table>
-            <p><input type="button" value="Start" /></p>
-            <p id="message"></p>
-        </div>
-        <table id="piecesLost">
-            <caption>Pieces lost</caption>
-            <tbody>
-                <tr data-piece="MARSHAL"><td><img src="images/stratego-marshal.svg" alt="Marechal" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="GENERAL"><td><img src="images/stratego-general.svg" alt="General" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="COLONEL"><td><img src="images/stratego-colonel.svg" alt="Coronel" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="MAJOR"><td><img src="images/stratego-major.svg" alt="Major" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="CAPTAIN"><td><img src="images/stratego-captain.svg" alt="Capitão" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="LIEUTENANT"><td><img src="images/stratego-lieutenant.svg" alt="Tenente" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="SERGEANT"><td><img src="images/stratego-sergeant.svg" alt="Sargento" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="MINER"><td><img src="images/stratego-miner.svg" alt="Cabo Mineiro" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="SCOUT"><td><img src="images/stratego-scout.svg" alt="Soldado" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="SPY"><td><img src="images/stratego-spy.svg" alt="Espião" /></td><td><span></span>/<span></span></td></tr>
-                <tr data-piece="BOMB"><td><img src="images/stratego-bomb.svg" alt="Bomba" /></td><td><span></span>/<span></span></td></tr>
-            </tbody>
-        </table>
-    </body>
+        <p><input type="button" value="Start" /></p>
+        <p id="message"></p>
+    </div>
+    <table id="piecesLost">
+        <caption>Pieces lost</caption>
+        <tbody>
+            <tr data-piece="MARSHAL">
+                <td><img src="images/stratego-marshal.svg" alt="Marechal" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="GENERAL">
+                <td><img src="images/stratego-general.svg" alt="General" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="COLONEL">
+                <td><img src="images/stratego-colonel.svg" alt="Coronel" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="MAJOR">
+                <td><img src="images/stratego-major.svg" alt="Major" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="CAPTAIN">
+                <td><img src="images/stratego-captain.svg" alt="Capitão" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="LIEUTENANT">
+                <td><img src="images/stratego-lieutenant.svg" alt="Tenente" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="SERGEANT">
+                <td><img src="images/stratego-sergeant.svg" alt="Sargento" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="MINER">
+                <td><img src="images/stratego-miner.svg" alt="Cabo Mineiro" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="SCOUT">
+                <td><img src="images/stratego-scout.svg" alt="Soldado" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="SPY">
+                <td><img src="images/stratego-spy.svg" alt="Espião" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+            <tr data-piece="BOMB">
+                <td><img src="images/stratego-bomb.svg" alt="Bomba" /></td>
+                <td><span></span>/<span></span></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
 </html>

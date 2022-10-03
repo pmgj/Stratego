@@ -11,6 +11,7 @@ public class Stratego {
 
     private final Piece[][] board;
     private Player turn = Player.PLAYER1;
+    private Winner winner = Winner.NONE;
 
     public Stratego() {
         this.board = new Piece[10][10];
@@ -51,6 +52,10 @@ public class Stratego {
         return turn;
     }
 
+    public Winner getWinner() {
+        return winner;
+    }
+
     private Graveyard getGraveyard(Player player) {
         Function<Piece, Long> countPieces = (piece) -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
                 .filter(p -> p.getPlayer() == piece.getPlayer() && p.getArmyPiece() == piece.getArmyPiece()).count();
@@ -73,7 +78,7 @@ public class Stratego {
         return list;
     }
 
-    private Move isGameOver(Cell endCell) {
+    private Winner isGameOver(Cell endCell) {
         int dr = endCell.getX(), dc = endCell.getY();
         /* Se um jogador não tem mais peças a mexer, perde o jogo */
         Function<PieceType, Long> numMovablePieces = (player) -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
@@ -83,32 +88,32 @@ public class Stratego {
         long player1MovablePieces = numMovablePieces.apply(PieceType.PLAYER1);
         long player2MovablePieces = numMovablePieces.apply(PieceType.PLAYER2);
         if (player1MovablePieces == 0 && player2MovablePieces != 0) {
-            return Move.PLAYER2_WIN;
+            return Winner.PLAYER2;
         } else if (player1MovablePieces != 0 && player2MovablePieces == 0) {
-            return Move.PLAYER1_WIN;
+            return Winner.PLAYER1;
         } else if (player1MovablePieces == 0 && player2MovablePieces == 0) {
-            return Move.DRAW;
+            return Winner.DRAW;
         }
         /* Se um jogador possui peças mas não pode movê-las, perde o jogo */
         boolean j1pm = this.canMove(PieceType.PLAYER1);
         boolean j2pm = this.canMove(PieceType.PLAYER2);
         if (!j1pm && j2pm) {
-            return Move.PLAYER2_WIN;
+            return Winner.PLAYER2;
         } else if (j1pm && !j2pm) {
-            return Move.PLAYER1_WIN;
+            return Winner.PLAYER1;
         } else if (!j1pm && !j2pm) {
-            return Move.DRAW;
+            return Winner.DRAW;
         }
         /* Se um jogador capturou a bandeira, venceu o jogo */
         Piece p2 = board[dr][dc];
         if (p2.getArmyPiece() == ArmyPiece.FLAG) {
             if (p2.getPlayer() == PieceType.PLAYER1) {
-                return Move.PLAYER2_WIN;
+                return Winner.PLAYER2;
             } else {
-                return Move.PLAYER1_WIN;
+                return Winner.PLAYER1;
             }
         }
-        return Move.VALID;
+        return Winner.NONE;
     }
 
     private boolean canMove(PieceType player) {
@@ -222,16 +227,15 @@ public class Stratego {
         return false;
     }
 
-    public Move move(Player player, Cell beginCell, Cell endCell) {
+    public void move(Player player, Cell beginCell, Cell endCell) {
         int or = beginCell.getX(), oc = beginCell.getY(), dr = endCell.getX(), dc = endCell.getY();
         /* Fim do jogo? */
-        Move fim = isGameOver(endCell);
-        if (fim != Move.VALID) {
-            return fim;
+        if (this.winner != Winner.NONE) {
+            throw new IllegalArgumentException("This game is already finished.");
         }
         /* Pode mover esta peça para este destino? */
         if (!canMove(player, beginCell, endCell)) {
-            return Move.INVALID;
+            throw new IllegalArgumentException("This move is invalid.");
         }
         /* Jogada para casa vazia */
         if (board[dr][dc].getPlayer() == PieceType.EMPTY) {
@@ -251,7 +255,7 @@ public class Stratego {
         /* Mudar a vez de jogar */
         turn = (turn == Player.PLAYER1) ? Player.PLAYER2 : Player.PLAYER1;
         /* Fim do jogo? */
-        return isGameOver(endCell);
+        this.winner = isGameOver(endCell);
     }
 
     public Piece[][] hiddenBoard(Player jogador) {
