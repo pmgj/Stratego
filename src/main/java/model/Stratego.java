@@ -57,13 +57,13 @@ public class Stratego {
     }
 
     private Graveyard getGraveyard(Player player) {
-        Function<Piece, Long> countPieces = (piece) -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
+        Function<Piece, Long> countPieces = piece -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
                 .filter(p -> p.getPlayer() == piece.getPlayer() && p.getArmyPiece() == piece.getArmyPiece()).count();
-        List<PieceCount> numPieces = new ArrayList<>();
-        for (ArmyPiece peca : ArmyPiece.values()) {
+        var numPieces = new ArrayList<PieceCount>();
+        for (var peca : ArmyPiece.values()) {
             int index = peca.ordinal();
             if (index < 11) {
-                PieceCount pc = new PieceCount(peca, countPieces
+                var pc = new PieceCount(peca, countPieces
                         .apply(new Piece(player == Player.PLAYER1 ? PieceType.PLAYER1 : PieceType.PLAYER2, peca)));
                 numPieces.add(pc);
             }
@@ -72,7 +72,7 @@ public class Stratego {
     }
 
     public List<Graveyard> getGraveyard() {
-        List<Graveyard> list = new ArrayList<>();
+        var list = new ArrayList<Graveyard>();
         list.add(this.getGraveyard(Player.PLAYER1));
         list.add(this.getGraveyard(Player.PLAYER2));
         return list;
@@ -81,10 +81,9 @@ public class Stratego {
     private Winner isGameOver(Cell endCell) {
         int dr = endCell.getX(), dc = endCell.getY();
         /* Se um jogador não tem mais peças a mexer, perde o jogo */
-        Function<PieceType, Long> numMovablePieces = (player) -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
+        Function<PieceType, Long> numMovablePieces = player -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
                 .filter(p -> p.getPlayer() == player && p.getArmyPiece() != ArmyPiece.FLAG
-                        && p.getArmyPiece() != ArmyPiece.BOMB)
-                .count();
+                        && p.getArmyPiece() != ArmyPiece.BOMB).count();
         long player1MovablePieces = numMovablePieces.apply(PieceType.PLAYER1);
         long player2MovablePieces = numMovablePieces.apply(PieceType.PLAYER2);
         if (player1MovablePieces == 0 && player2MovablePieces != 0) {
@@ -242,8 +241,8 @@ public class Stratego {
             board[dr][dc] = board[or][oc];
         } else {
             /* Tentativa de ataque */
-            ArmyPiece atacante = board[or][oc].getArmyPiece();
-            ArmyPiece atacado = board[dr][dc].getArmyPiece();
+            var atacante = board[or][oc].getArmyPiece();
+            var atacado = board[dr][dc].getArmyPiece();
             if (atacante.ordinal() > atacado.ordinal() || (atacante == ArmyPiece.SPY && atacado == ArmyPiece.MARSHAL)
                     || (atacante == ArmyPiece.MINER && atacado == ArmyPiece.BOMB)) {
                 board[dr][dc] = board[or][oc];
@@ -253,7 +252,7 @@ public class Stratego {
         }
         board[or][oc] = new Piece(PieceType.EMPTY);
         /* Mudar a vez de jogar */
-        turn = (turn == Player.PLAYER1) ? Player.PLAYER2 : Player.PLAYER1;
+        turn = turn == Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         /* Fim do jogo? */
         this.winner = isGameOver(endCell);
     }

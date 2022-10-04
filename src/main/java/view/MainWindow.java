@@ -87,7 +87,7 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 Square b = board[i][j];
-                int index = pecas[i][j].getArmyPiece().getNumber();
+                int index = pecas[i][j].getArmyPiece().ordinal();
                 ImageIcon icon = new ImageIcon(String.format("web/images/stratego-%s.png", imageNames[index]));
                 b.setIcon(icon);
                 b.setToolTipText(pecas[i][j].getArmyPiece().getName());
