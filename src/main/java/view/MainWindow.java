@@ -90,7 +90,7 @@ public class MainWindow extends JFrame {
                 int index = pecas[i][j].getArmyPiece().ordinal();
                 ImageIcon icon = new ImageIcon(String.format("web/images/stratego-%s.png", imageNames[index]));
                 b.setIcon(icon);
-                b.setToolTipText(pecas[i][j].getArmyPiece().getName());
+                b.setToolTipText(pecas[i][j].getArmyPiece().name());
             }
         }
     }

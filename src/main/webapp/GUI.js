@@ -1,11 +1,12 @@
 import Cell from "./Cell.js";
+import ArmyPiece from "./ArmyPiece.js";
+import PieceType from "./PieceType.js";
 
 class GUI {
     constructor() {
         this.ws = null;
         this.player = null;
         this.beginCell = null;
-        this.images = { SPY: "spy", SCOUT: "scout", MINER: "miner", SERGEANT: "sergeant", LIEUTENANT: "lieutenant", CAPTAIN: "captain", MAJOR: "major", COLONEL: "colonel", GENERAL: "general", MARSHAL: "marshal", BOMB: "bomb", FLAG: "flag", ENEMY: "enemy", EMPTY: "empty", LAKE: "lake" };
         this.closeCodes = { ENDGAME: { code: 4000, description: "End of game." }, ADVERSARY_QUIT: { code: 4001, description: "The opponent quit the game" } };
     }
     coordinates(cell) {
@@ -68,25 +69,17 @@ class GUI {
         let piecesLost = document.querySelectorAll("#piecesLost tr");
         for (let tableRow of piecesLost) {
             let data = tableRow.dataset.piece;
-            let td2 = tableRow.querySelector("td:first-child + td span:first-child");
+            let td2 = tableRow.querySelector("td:last-child");
             let numOfPieces = myG.find(obj => obj.piece === data).count;
             td2.textContent = numOfPieces;
-            let td3 = tableRow.querySelector("td:first-child + td span:last-child");
-            if (td3.textContent === "") {
-                td3.textContent = numOfPieces;
-            }
         }
         let opG = graveyard.find(g => g.player !== this.player).pieceCount;
         let piecesCaptured = document.querySelectorAll("#piecesCaptured tr");
         for (let tableRow of piecesCaptured) {
             let data = tableRow.dataset.piece;
-            let td2 = tableRow.querySelector("td:first-child + td span:first-child");
+            let td2 = tableRow.querySelector("td:last-child");
             let numOfPieces = opG.find(obj => obj.piece === data).count;
             td2.textContent = numOfPieces;
-            let td3 = tableRow.querySelector("td:first-child + td span:last-child");
-            if (td3.textContent === "") {
-                td3.textContent = numOfPieces;
-            }
         }
     }
     printBoard(matrix) {
@@ -97,20 +90,34 @@ class GUI {
             for (let j = 0; j < matrix[i].length; j++) {
                 let td = document.createElement("td");
                 td.onclick = this.play.bind(this);
-                let piece = matrix[i][j];
+                let piece = matrix[i][j], text;
                 switch (piece.player) {
-                    case "EMPTY":
-                    case "LAKE":
-                        td.innerHTML = `<img src='images/stratego-${this.images[piece.player]}.svg' alt='' title='${this.images[piece.player]}'>`;
+                    case PieceType.EMPTY:
+                    case PieceType.LAKE:
+                        text = piece.player.toLowerCase();
+                        td.innerHTML = `<img src="images/stratego-${text}.svg" alt="${text}" title="${text}">`;
                         break;
                     default:
-                        td.innerHTML = `<img src='images/stratego-${this.images[piece.armyPiece]}.svg' alt='' title='${this.images[piece.armyPiece]}'>`;
+                        text = piece.armyPiece.toLowerCase();
+                        td.innerHTML = `<img src="images/stratego-${text}.svg" alt="${text}" title="${text}">`;
                         break;
                 }
                 tr.appendChild(td);
             }
             tbody.appendChild(tr);
         }
+    }
+    printStartGraveyard() {
+        let piecesLost = document.querySelector("#piecesLost tbody");
+        let piecesCaptured = document.querySelector("#piecesCaptured tbody");
+        let str = "";
+        for (let piece in ArmyPiece) {
+            if(piece !== ArmyPiece.ENEMY && piece !== ArmyPiece.FLAG) {
+                str += `<tr data-piece="${piece}"><td><img src="images/stratego-${piece.toLowerCase()}.svg" alt="${piece.toLowerCase()}" title="${piece.toLowerCase()}" /></td><td></td></tr>`;
+            }
+        }
+        piecesLost.innerHTML = str;
+        piecesCaptured.innerHTML = str;
     }
     startGame() {
         if (this.ws) {
@@ -126,6 +133,7 @@ class GUI {
         let button = document.querySelector("input[type='button']");
         button.onclick = this.startGame.bind(this);
         this.setButtonText(true);
+        this.printStartGraveyard();
     }
 }
 let gui = new GUI();

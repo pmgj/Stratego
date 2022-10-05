@@ -218,8 +218,8 @@ public class Stratego {
             if (move && (dr == or || dc == oc)
                     && (board[dr][dc].getPlayer() == PieceType.EMPTY || ((board[or][oc].getPlayer() == PieceType.PLAYER1
                             && board[dr][dc].getPlayer() == PieceType.PLAYER2)
-                            || ((board[or][oc].getPlayer() == PieceType.PLAYER2
-                                    && board[dr][dc].getPlayer() == PieceType.PLAYER1))))) {
+                            || (board[or][oc].getPlayer() == PieceType.PLAYER2
+                                    && board[dr][dc].getPlayer() == PieceType.PLAYER1)))) {
                 return true;
             }
         }
