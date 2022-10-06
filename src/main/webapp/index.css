@@ -1,18 +1,22 @@
-h1,
 p {
     text-align: center;
 }
 
-#tabuleiro {
+#board {
     border-collapse: collapse;
     margin: 0 auto;
 }
 
-#tabuleiro td {
+#board td {
     border: 1px solid black;
     width: 49px;
     height: 49px;
     text-align: center;
+}
+
+#board caption {
+    font-size: xx-large;
+    font-weight: bold;
 }
 
 img {
@@ -20,18 +24,22 @@ img {
     height: 45px;
 }
 
-#piecesCaptured,
-div,
-#piecesLost {
-    float: left;
+body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 #piecesCaptured,
 #piecesLost {
     width: 60px;
-    border: 1px solid black;
 }
 
-div {
-    width: 50%;
+main {
+    width: 510px;
+}
+
+#piecesCaptured td:first-child,
+#piecesLost td:last-child {
+    font-weight: bold;
 }

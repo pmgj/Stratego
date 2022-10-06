@@ -1,6 +1,8 @@
 import Cell from "./Cell.js";
 import ArmyPiece from "./ArmyPiece.js";
 import PieceType from "./PieceType.js";
+import ConnectionType from "./ConnectionType.js";
+import Winner from "./Winner.js";
 
 class GUI {
     constructor() {
@@ -19,18 +21,18 @@ class GUI {
     readData(evt) {
         let data = JSON.parse(evt.data);
         switch (data.type) {
-            case "OPEN":
+            case ConnectionType.OPEN:
                 /* Informando cor da peça do usuário atual */
                 this.player = data.turn;
                 this.setMessage("Waiting for opponent.");
                 break;
-            case "MESSAGE":
+            case ConnectionType.MESSAGE:
                 /* Recebendo o tabuleiro modificado */
                 this.printBoard(data.board);
                 this.printGraveyard(data.graveyard);
                 this.setMessage(data.turn === this.player ? "Your turn." : "Opponent's turn.");
                 break;
-            case "ENDGAME":
+            case ConnectionType.ENDGAME:
                 /* Fim do jogo */
                 this.printBoard(data.board);
                 this.printGraveyard(data.graveyard);
@@ -43,7 +45,7 @@ class GUI {
         this.unsetEvents();
         this.ws = null;
         this.setButtonText(true);
-        this.setMessage(`Game Over! ${(type === "DRAW") ? "Draw!" : (type === this.player ? "You win!" : "You lose!")}`);
+        this.setMessage(`Game Over! ${(type === Winner.DRAW) ? "Draw!" : (type === this.player ? "You win!" : "You lose!")}`);
     }
     setButtonText(on) {
         let button = document.querySelector("input[type='button']");
@@ -77,13 +79,13 @@ class GUI {
         let piecesCaptured = document.querySelectorAll("#piecesCaptured tr");
         for (let tableRow of piecesCaptured) {
             let data = tableRow.dataset.piece;
-            let td2 = tableRow.querySelector("td:last-child");
+            let td2 = tableRow.querySelector("td:first-child");
             let numOfPieces = opG.find(obj => obj.piece === data).count;
             td2.textContent = numOfPieces;
         }
     }
     printBoard(matrix) {
-        let tbody = document.querySelector("#tabuleiro tbody");
+        let tbody = document.querySelector("#board tbody");
         tbody.innerHTML = "";
         for (let i = 0; i < matrix.length; i++) {
             let tr = document.createElement("tr");
@@ -110,14 +112,15 @@ class GUI {
     printStartGraveyard() {
         let piecesLost = document.querySelector("#piecesLost tbody");
         let piecesCaptured = document.querySelector("#piecesCaptured tbody");
-        let str = "";
+        let str1 = "", str2 = "";
         for (let piece in ArmyPiece) {
             if(piece !== ArmyPiece.ENEMY && piece !== ArmyPiece.FLAG) {
-                str += `<tr data-piece="${piece}"><td><img src="images/stratego-${piece.toLowerCase()}.svg" alt="${piece.toLowerCase()}" title="${piece.toLowerCase()}" /></td><td></td></tr>`;
+                str1 += `<tr data-piece="${piece}"><td><img src="images/stratego-${piece.toLowerCase()}.svg" alt="${piece.toLowerCase()}" title="${piece.toLowerCase()}" /></td><td></td></tr>`;
+                str2 += `<tr data-piece="${piece}"><td></td><td><img src="images/stratego-${piece.toLowerCase()}.svg" alt="${piece.toLowerCase()}" title="${piece.toLowerCase()}" /></td></tr>`;
             }
         }
-        piecesLost.innerHTML = str;
-        piecesCaptured.innerHTML = str;
+        piecesLost.innerHTML = str1;
+        piecesCaptured.innerHTML = str2;
     }
     startGame() {
         if (this.ws) {
