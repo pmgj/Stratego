@@ -1,8 +1,8 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -12,13 +12,17 @@ public class Stratego {
     private final Piece[][] board;
     private Player turn = Player.PLAYER1;
     private Winner winner = Winner.NONE;
+    private int rows = 10;
+    private int cols = 10;
+    private Piece attackingPiece;
+    private Piece defendingPiece;
 
     public Stratego() {
-        this.board = new Piece[10][10];
-        int[] PIECES_QUANTITIES = { 1, 8, 5, 4, 4, 4, 3, 2, 1, 1, 6, 1, 0, 0, 0 };
+        this.board = new Piece[this.rows][this.cols];
+        int[] PIECES_QUANTITIES = { 1, 8, 5, 4, 4, 4, 3, 2, 1, 1, 6, 1, 0 };
         List<Piece> pecas1 = new ArrayList<>();
         List<Piece> pecas2 = new ArrayList<>();
-        for (ArmyPiece peca : ArmyPiece.values()) {
+        for (var peca : ArmyPiece.values()) {
             int index = peca.ordinal();
             for (int i = 0; i < PIECES_QUANTITIES[index]; i++) {
                 pecas1.add(new Piece(PieceType.PLAYER1, peca));
@@ -27,19 +31,16 @@ public class Stratego {
         }
         Collections.shuffle(pecas1);
         Collections.shuffle(pecas2);
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (i < 4) {
-                    this.board[i][j] = pecas2.remove(0);
-                } else if (i < 6) {
-                    if (j == 2 || j == 3 || j == 6 || j == 7) {
-                        this.board[i][j] = new Piece(PieceType.LAKE);
-                    } else {
-                        this.board[i][j] = new Piece(PieceType.EMPTY);
-                    }
-                } else {
-                    this.board[i][j] = pecas1.remove(0);
-                }
+        for (int i = 4; i < 6; i++) {
+            for (int j = 0; j < this.cols; j++) {
+                this.board[i][j] = (j == 2 || j == 3 || j == 6 || j == 7) ? new Piece(PieceType.LAKE)
+                        : new Piece(PieceType.EMPTY);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < this.cols; j++) {
+                this.board[i][j] = pecas2.remove(0);
+                this.board[i + 6][j] = pecas1.remove(0);
             }
         }
     }
@@ -54,6 +55,14 @@ public class Stratego {
 
     public Winner getWinner() {
         return winner;
+    }
+
+    public Piece getAttackingPiece() {
+        return attackingPiece;
+    }
+
+    public Piece getDefendingPiece() {
+        return defendingPiece;
     }
 
     private Graveyard getGraveyard(Player player) {
@@ -83,7 +92,8 @@ public class Stratego {
         /* Se um jogador não tem mais peças a mexer, perde o jogo */
         Function<PieceType, Long> numMovablePieces = player -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
                 .filter(p -> p.getPlayer() == player && p.getArmyPiece() != ArmyPiece.FLAG
-                        && p.getArmyPiece() != ArmyPiece.BOMB).count();
+                        && p.getArmyPiece() != ArmyPiece.BOMB)
+                .count();
         long player1MovablePieces = numMovablePieces.apply(PieceType.PLAYER1);
         long player2MovablePieces = numMovablePieces.apply(PieceType.PLAYER2);
         if (player1MovablePieces == 0 && player2MovablePieces != 0) {
@@ -117,8 +127,8 @@ public class Stratego {
 
     private boolean canMove(PieceType player) {
         boolean ok = false;
-        for (int i = 0; i < board.length && !ok; i++) {
-            for (int j = 0; j < board[i].length && !ok; j++) {
+        for (int i = 0; i < this.rows && !ok; i++) {
+            for (int j = 0; j < this.cols && !ok; j++) {
                 if (board[i][j].getPlayer() == player) {
                     Cell temp = new Cell(i, j);
                     if (canMove(temp, new Cell(i + 1, j)) || canMove(temp, new Cell(i - 1, j))
@@ -164,7 +174,7 @@ public class Stratego {
 
     private boolean onBoard(Cell cell) {
         BiFunction<Integer, Integer, Boolean> inLimit = (value, limit) -> value >= 0 && value < limit;
-        return (inLimit.apply(cell.getX(), board.length) && inLimit.apply(cell.getY(), board[0].length));
+        return (inLimit.apply(cell.getX(), this.rows) && inLimit.apply(cell.getY(), this.cols));
     }
 
     private boolean canMove(Player player, Cell beginCell, Cell endCell) {
@@ -236,11 +246,15 @@ public class Stratego {
         if (!canMove(player, beginCell, endCell)) {
             throw new IllegalArgumentException("This move is invalid.");
         }
+        this.attackingPiece = null;
+        this.defendingPiece = null;
         /* Jogada para casa vazia */
         if (board[dr][dc].getPlayer() == PieceType.EMPTY) {
             board[dr][dc] = board[or][oc];
         } else {
             /* Tentativa de ataque */
+            this.attackingPiece = board[or][oc];
+            this.defendingPiece = board[dr][dc];
             var atacante = board[or][oc].getArmyPiece();
             var atacado = board[dr][dc].getArmyPiece();
             if (atacante.ordinal() > atacado.ordinal() || (atacante == ArmyPiece.SPY && atacado == ArmyPiece.MARSHAL)

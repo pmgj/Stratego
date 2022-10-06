@@ -22,6 +22,8 @@ p {
 img {
     width: 45px;
     height: 45px;
+    position: relative;
+    animation-fill-mode: backwards;
 }
 
 body {

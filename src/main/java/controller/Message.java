@@ -1,6 +1,8 @@
 package controller;
 
 import java.util.List;
+
+import model.Cell;
 import model.Graveyard;
 import model.Piece;
 import model.Player;
@@ -12,6 +14,10 @@ public class Message {
     private Piece[][] board;
     private List<Graveyard> graveyard;
     private Winner winner;
+    private Piece attackingPiece;
+    private Piece defendingPiece;
+    private Cell attackingCell;
+    private Cell defendingCell;
 
     public Message() {
     }
@@ -21,6 +27,12 @@ public class Message {
         this.turn = turn;
     }
 
+    public Message(ConnectionType type, Player turn, List<Graveyard> g) {
+        this.type = type;
+        this.turn = turn;
+        this.graveyard = g;
+    }
+
     public Message(ConnectionType type, Player turn, Piece[][] board, List<Graveyard> g) {
         this.type = type;
         this.turn = turn;
@@ -28,9 +40,8 @@ public class Message {
         this.graveyard = g;
     }
 
-    public Message(ConnectionType type, Piece[][] board, List<Graveyard> g, Winner winner) {
+    public Message(ConnectionType type, List<Graveyard> g, Winner winner) {
         this.type = type;
-        this.board = board;
         this.graveyard = g;
         this.winner = winner;
     }
@@ -73,5 +84,37 @@ public class Message {
 
     public void setWinner(Winner winner) {
         this.winner = winner;
+    }
+
+    public Piece getAttackingPiece() {
+        return attackingPiece;
+    }
+
+    public void setAttackingPiece(Piece attackingPiece) {
+        this.attackingPiece = attackingPiece;
+    }
+
+    public Piece getDefendingPiece() {
+        return defendingPiece;
+    }
+
+    public void setDefendingPiece(Piece defendingPiece) {
+        this.defendingPiece = defendingPiece;
+    }
+
+    public Cell getAttackingCell() {
+        return attackingCell;
+    }
+
+    public void setAttackingCell(Cell attackingCell) {
+        this.attackingCell = attackingCell;
+    }
+
+    public Cell getDefendingCell() {
+        return defendingCell;
+    }
+
+    public void setDefendingCell(Cell defendingCell) {
+        this.defendingCell = defendingCell;
     }
 }

@@ -56,6 +56,7 @@ public class MainWindow extends JFrame {
                 /* Informando cor da peça do usuário atual */
                 this.player = msg.getTurn();
                 break;
+            case START_BOARD:
             case MESSAGE:
                 /* Recebendo o tabuleiro modificado */
                 String info = (this.player == msg.getTurn()) ? "É a sua vez de jogar."

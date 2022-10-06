@@ -18,6 +18,10 @@ class GUI {
         let message = document.getElementById("message");
         message.innerHTML = msg;
     }
+    getTableData({ x, y }) {
+        let board = document.querySelector("#board");
+        return board.rows[x].cells[y];
+    }
     readData(evt) {
         let data = JSON.parse(evt.data);
         switch (data.type) {
@@ -26,9 +30,36 @@ class GUI {
                 this.player = data.turn;
                 this.setMessage("Waiting for opponent.");
                 break;
-            case ConnectionType.MESSAGE:
-                /* Recebendo o tabuleiro modificado */
+            case ConnectionType.START_BOARD:
+                /* Recebendo o tabuleiro */
                 this.printBoard(data.board);
+                this.printGraveyard(data.graveyard);
+                this.setMessage(data.turn === this.player ? "Your turn." : "Opponent's turn.");
+                break;
+            case ConnectionType.MESSAGE:
+                /* Recebendo uma jogada */
+                const time = 1000;
+                let beginCell = data.attackingCell;
+                let endCell = data.defendingCell;
+                let moveImage = (destinationCell, piece) => {
+                    destinationCell.innerHTML = "";
+                    destinationCell.appendChild(piece);
+                };
+                let animatePiece = (startPosition, endPosition) => {
+                    let bTD = this.getTableData(startPosition);
+                    let eTD = this.getTableData(endPosition);
+                    let piece = bTD.firstChild;
+                    let { x: a, y: b } = startPosition;
+                    let { x: c, y: d } = endPosition;
+                    let td = document.querySelector("#board td");
+                    let size = td.offsetWidth;
+                    let anim = piece.animate([{ top: 0, left: 0 }, { top: `${(c - a) * size}px`, left: `${(d - b) * size}px` }], time);
+                    anim.onfinish = () => moveImage(eTD, piece);
+                };
+                animatePiece(beginCell, endCell);
+                let eTD = this.getTableData(endCell);
+                let opponentImage = eTD.firstChild;
+                opponentImage?.animate([{ opacity: 1 }, { opacity: 0 }], time);
                 this.printGraveyard(data.graveyard);
                 this.setMessage(data.turn === this.player ? "Your turn." : "Opponent's turn.");
                 break;
@@ -95,6 +126,7 @@ class GUI {
                 let piece = matrix[i][j], text;
                 switch (piece.player) {
                     case PieceType.EMPTY:
+                        break;
                     case PieceType.LAKE:
                         text = piece.player.toLowerCase();
                         td.innerHTML = `<img src="images/stratego-${text}.svg" alt="${text}" title="${text}">`;
@@ -114,7 +146,7 @@ class GUI {
         let piecesCaptured = document.querySelector("#piecesCaptured tbody");
         let str1 = "", str2 = "";
         for (let piece in ArmyPiece) {
-            if(piece !== ArmyPiece.ENEMY && piece !== ArmyPiece.FLAG) {
+            if (piece !== ArmyPiece.ENEMY && piece !== ArmyPiece.FLAG) {
                 str1 += `<tr data-piece="${piece}"><td><img src="images/stratego-${piece.toLowerCase()}.svg" alt="${piece.toLowerCase()}" title="${piece.toLowerCase()}" /></td><td></td></tr>`;
                 str2 += `<tr data-piece="${piece}"><td></td><td><img src="images/stratego-${piece.toLowerCase()}.svg" alt="${piece.toLowerCase()}" title="${piece.toLowerCase()}" /></td></tr>`;
             }
