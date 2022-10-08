@@ -271,7 +271,7 @@ public class Stratego {
                     || (atacante == ArmyPiece.MINER && atacado == ArmyPiece.BOMB)) {
                 board[dr][dc] = board[or][oc];
                 this.attackResult = this.turn == Player.PLAYER1 ? Winner.PLAYER1 : Winner.PLAYER2;
-            } else if (atacante.ordinal() == atacado.ordinal()) {
+            } else if (atacante == atacado) {
                 board[dr][dc] = new Piece(PieceType.EMPTY);
                 this.attackResult = Winner.DRAW;
             } else if (atacante.ordinal() < atacado.ordinal()) {
