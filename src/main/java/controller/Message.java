@@ -18,6 +18,7 @@ public class Message {
     private Piece defendingPiece;
     private Cell attackingCell;
     private Cell defendingCell;
+    private Winner attackResult;
 
     public Message() {
     }
@@ -116,5 +117,13 @@ public class Message {
 
     public void setDefendingCell(Cell defendingCell) {
         this.defendingCell = defendingCell;
+    }
+
+    public Winner getAttackResult() {
+        return attackResult;
+    }
+
+    public void setAttackResult(Winner attackResult) {
+        this.attackResult = attackResult;
     }
 }

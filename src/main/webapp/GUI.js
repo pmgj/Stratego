@@ -38,39 +38,74 @@ class GUI {
                 break;
             case ConnectionType.MESSAGE:
                 /* Recebendo uma jogada */
-                const time = 1000;
-                let beginCell = data.attackingCell;
-                let endCell = data.defendingCell;
-                let moveImage = (destinationCell, piece) => {
-                    destinationCell.innerHTML = "";
-                    destinationCell.appendChild(piece);
-                };
-                let animatePiece = (startPosition, endPosition) => {
-                    let bTD = this.getTableData(startPosition);
-                    let eTD = this.getTableData(endPosition);
-                    let piece = bTD.firstChild;
-                    let { x: a, y: b } = startPosition;
-                    let { x: c, y: d } = endPosition;
-                    let td = document.querySelector("#board td");
-                    let size = td.offsetWidth;
-                    let anim = piece.animate([{ top: 0, left: 0 }, { top: `${(c - a) * size}px`, left: `${(d - b) * size}px` }], time);
-                    anim.onfinish = () => moveImage(eTD, piece);
-                };
-                animatePiece(beginCell, endCell);
-                let eTD = this.getTableData(endCell);
-                let opponentImage = eTD.firstChild;
-                opponentImage?.animate([{ opacity: 1 }, { opacity: 0 }], time);
-                this.printGraveyard(data.graveyard);
-                this.setMessage(data.turn === this.player ? "Your turn." : "Opponent's turn.");
+                this.movePiece(data);
                 break;
             case ConnectionType.ENDGAME:
                 /* Fim do jogo */
                 this.printBoard(data.board);
                 this.printGraveyard(data.graveyard);
-                this.ws.close(closeCodes.ENDGAME.code, closeCodes.ENDGAME.description);
+                this.ws.close(this.closeCodes.ENDGAME.code, this.closeCodes.ENDGAME.description);
                 this.endGame(data.winner);
                 break;
         }
+    }
+    movePiece(data) {
+        const time = 1000;
+        let beginCell = data.attackingCell;
+        let endCell = data.defendingCell;
+        let attackingPiece = data.attackingPiece;
+        let defendingPiece = data.defendingPiece;
+        let moveImage = (destinationCell, piece) => {
+            destinationCell.innerHTML = "";
+            destinationCell.appendChild(piece);
+        };
+        let animatePiece = (startPosition, endPosition) => {
+            let bTD = this.getTableData(startPosition);
+            let eTD = this.getTableData(endPosition);
+            let piece = bTD.firstChild;
+            let { x: a, y: b } = startPosition;
+            let { x: c, y: d } = endPosition;
+            let td = document.querySelector("#board td");
+            let size = td.offsetWidth;
+            let anim = piece.animate([{ top: 0, left: 0 }, { top: `${(c - a) * size}px`, left: `${(d - b) * size}px` }], time);
+            anim.onfinish = () => moveImage(eTD, piece);
+        };
+        let removePiece = td => {
+            let img = td.firstChild;
+            img?.animate([{ opacity: 1 }, { opacity: 0 }], time);
+        };
+        let showPiece = (cell, piece, remove) => {
+            let td = this.getTableData(cell);
+            let img = td.firstChild;
+            let source = img.src;
+            img.src = `images/stratego-${piece.armyPiece.toLowerCase()}.svg`;
+            setTimeout(() => {
+                if (remove) {
+                    removePiece(td);
+                } else {
+                    img.src = source;
+                }
+            }, time);
+        };
+        if (data.attackResult === Winner.NONE) {
+            animatePiece(beginCell, endCell);
+            let eTD = this.getTableData(endCell);
+            removePiece(eTD);
+        } else if (data.attackResult === Winner.DRAW) {
+            showPiece(beginCell, attackingPiece, true);
+            showPiece(endCell, defendingPiece, true);
+        } else {
+            if (attackingPiece.player === data.attackResult) {
+                showPiece(beginCell, attackingPiece, false);
+                showPiece(endCell, defendingPiece, true);
+                animatePiece(beginCell, endCell);
+            } else {
+                showPiece(beginCell, attackingPiece, true);
+                showPiece(endCell, defendingPiece, false);
+            }
+        }
+        this.printGraveyard(data.graveyard);
+        this.setMessage(data.turn === this.player ? "Your turn." : "Opponent's turn.");
     }
     endGame(type) {
         this.unsetEvents();
@@ -156,7 +191,7 @@ class GUI {
     }
     startGame() {
         if (this.ws) {
-            this.ws.close(closeCodes.ADVERSARY_QUIT.code, closeCodes.ADVERSARY_QUIT.description);
+            this.ws.close(this.closeCodes.ADVERSARY_QUIT.code, this.closeCodes.ADVERSARY_QUIT.description);
             this.endGame();
         } else {
             this.ws = new WebSocket(`ws://${document.location.host}${document.location.pathname}stratego`);

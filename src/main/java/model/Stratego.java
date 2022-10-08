@@ -16,12 +16,13 @@ public class Stratego {
     private int cols = 10;
     private Piece attackingPiece;
     private Piece defendingPiece;
+    private Winner attackResult;
 
     public Stratego() {
         this.board = new Piece[this.rows][this.cols];
         int[] PIECES_QUANTITIES = { 1, 8, 5, 4, 4, 4, 3, 2, 1, 1, 6, 1, 0 };
-        List<Piece> pecas1 = new ArrayList<>();
-        List<Piece> pecas2 = new ArrayList<>();
+        var pecas1 = new ArrayList<Piece>();
+        var pecas2 = new ArrayList<Piece>();
         for (var peca : ArmyPiece.values()) {
             int index = peca.ordinal();
             for (int i = 0; i < PIECES_QUANTITIES[index]; i++) {
@@ -65,9 +66,17 @@ public class Stratego {
         return defendingPiece;
     }
 
+    public Winner getAttackResult() {
+        return attackResult;
+    }
+
     private Graveyard getGraveyard(Player player) {
         Function<Piece, Long> countPieces = piece -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
-                .filter(p -> p.getPlayer() == piece.getPlayer() && p.getArmyPiece() == piece.getArmyPiece()).count();
+                .filter(p -> p.equals(piece)).count();
+        // Function<Piece, Long> countPieces = piece -> Arrays.stream(board).flatMap(row
+        // -> Arrays.stream(row))
+        // .filter(p -> p.getPlayer() == piece.getPlayer() && p.getArmyPiece() ==
+        // piece.getArmyPiece()).count();
         var numPieces = new ArrayList<PieceCount>();
         for (var peca : ArmyPiece.values()) {
             int index = peca.ordinal();
@@ -248,6 +257,7 @@ public class Stratego {
         }
         this.attackingPiece = null;
         this.defendingPiece = null;
+        this.attackResult = Winner.NONE;
         /* Jogada para casa vazia */
         if (board[dr][dc].getPlayer() == PieceType.EMPTY) {
             board[dr][dc] = board[or][oc];
@@ -260,8 +270,12 @@ public class Stratego {
             if (atacante.ordinal() > atacado.ordinal() || (atacante == ArmyPiece.SPY && atacado == ArmyPiece.MARSHAL)
                     || (atacante == ArmyPiece.MINER && atacado == ArmyPiece.BOMB)) {
                 board[dr][dc] = board[or][oc];
-            } else if (atacante == atacado) {
+                this.attackResult = this.turn == Player.PLAYER1 ? Winner.PLAYER1 : Winner.PLAYER2;
+            } else if (atacante.ordinal() == atacado.ordinal()) {
                 board[dr][dc] = new Piece(PieceType.EMPTY);
+                this.attackResult = Winner.DRAW;
+            } else if (atacante.ordinal() < atacado.ordinal()) {
+                this.attackResult = this.turn == Player.PLAYER1 ? Winner.PLAYER2 : Winner.PLAYER1;
             }
         }
         board[or][oc] = new Piece(PieceType.EMPTY);

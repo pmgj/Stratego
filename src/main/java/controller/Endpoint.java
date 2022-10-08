@@ -53,6 +53,7 @@ public class Endpoint {
                     m.setDefendingPiece(game.getDefendingPiece());
                     m.setAttackingCell(beginCell);
                     m.setDefendingCell(endCell);
+                    m.setAttackResult(game.getAttackResult());
                     s1.getBasicRemote().sendObject(m);
                     s2.getBasicRemote().sendObject(m);
                     break;
@@ -62,6 +63,7 @@ public class Endpoint {
                     m.setDefendingPiece(game.getDefendingPiece());
                     m.setAttackingCell(beginCell);
                     m.setDefendingCell(endCell);
+                    m.setAttackResult(game.getAttackResult());
                     s1.getBasicRemote().sendObject(m);
                     s2.getBasicRemote().sendObject(m);
                     break;
