@@ -6,6 +6,7 @@ import model.Cell;
 import model.Graveyard;
 import model.Piece;
 import model.Player;
+import model.Stratego;
 import model.Winner;
 
 public class Message {
@@ -28,22 +29,25 @@ public class Message {
         this.turn = turn;
     }
 
-    public Message(ConnectionType type, Player turn, List<Graveyard> g) {
+    public Message(ConnectionType type, Stratego game) {
         this.type = type;
-        this.turn = turn;
-        this.graveyard = g;
+        this.turn = game.getTurn();
+        this.graveyard = game.getGraveyard();
+        this.attackingPiece = game.getAttackingPiece();
+        this.defendingPiece = game.getDefendingPiece();
+        this.attackResult = game.getAttackResult();
+        this.winner = game.getWinner();
     }
 
-    public Message(ConnectionType type, Player turn, Piece[][] board, List<Graveyard> g) {
+    public Message(ConnectionType type, Stratego game, Piece[][] board) {
         this.type = type;
-        this.turn = turn;
+        this.turn = game.getTurn();
         this.board = board;
-        this.graveyard = g;
+        this.graveyard = game.getGraveyard();
     }
 
-    public Message(ConnectionType type, List<Graveyard> g, Winner winner) {
+    public Message(ConnectionType type, Winner winner) {
         this.type = type;
-        this.graveyard = g;
         this.winner = winner;
     }
 

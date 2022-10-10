@@ -65,7 +65,7 @@ public class MainWindow extends JFrame {
                 lMessage.setText(info);
                 this.atualizarTabuleiro(msg.getBoard());
                 break;
-            case ENDGAME:
+            case QUIT_GAME:
                 /* Fim do jogo */
                 String info2 = (msg.getTurn() == player) ? "Você venceu!" : "Você perdeu!";
                 lMessage.setText(info2);

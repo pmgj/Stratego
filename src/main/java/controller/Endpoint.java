@@ -30,8 +30,7 @@ public class Endpoint {
             game = new Stratego();
             s2 = session;
             s2.getBasicRemote().sendObject(new Message(ConnectionType.OPEN, Player.PLAYER2));
-            Message m = new Message(ConnectionType.START_BOARD, Player.PLAYER1, game.hiddenBoard(Player.PLAYER1),
-                    game.getGraveyard());
+            Message m = new Message(ConnectionType.START_BOARD, game, game.hiddenBoard(Player.PLAYER1));
             s1.getBasicRemote().sendObject(m);
             m.setBoard(game.hiddenBoard(Player.PLAYER2));
             s2.getBasicRemote().sendObject(m);
@@ -42,33 +41,15 @@ public class Endpoint {
 
     @OnMessage
     public void onMessage(Session session, MoveMessage message) throws IOException, EncodeException {
+        Cell beginCell = message.getBeginCell(), endCell = message.getEndCell();
         try {
-            Cell beginCell = message.getBeginCell(), endCell = message.getEndCell();
             game.move(session == s1 ? Player.PLAYER1 : Player.PLAYER2, beginCell, endCell);
-            Message m;
-            switch (game.getWinner()) {
-                case NONE:
-                    m = new Message(ConnectionType.MESSAGE, game.getTurn(), game.getGraveyard());
-                    m.setAttackingPiece(game.getAttackingPiece());
-                    m.setDefendingPiece(game.getDefendingPiece());
-                    m.setAttackingCell(beginCell);
-                    m.setDefendingCell(endCell);
-                    m.setAttackResult(game.getAttackResult());
-                    s1.getBasicRemote().sendObject(m);
-                    s2.getBasicRemote().sendObject(m);
-                    break;
-                default:
-                    m = new Message(ConnectionType.ENDGAME, game.getGraveyard(), game.getWinner());
-                    m.setAttackingPiece(game.getAttackingPiece());
-                    m.setDefendingPiece(game.getDefendingPiece());
-                    m.setAttackingCell(beginCell);
-                    m.setDefendingCell(endCell);
-                    m.setAttackResult(game.getAttackResult());
-                    s1.getBasicRemote().sendObject(m);
-                    s2.getBasicRemote().sendObject(m);
-                    break;
-            }    
-        } catch(IllegalArgumentException e) {
+            Message m = new Message(ConnectionType.MESSAGE, game);
+            m.setAttackingCell(beginCell);
+            m.setDefendingCell(endCell);
+            s1.getBasicRemote().sendObject(m);
+            s2.getBasicRemote().sendObject(m);
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -76,6 +57,7 @@ public class Endpoint {
     @OnClose
     public void onClose(Session session, CloseReason reason) throws IOException, EncodeException {
         switch (reason.getCloseCode().getCode()) {
+            case 1000:
             case 4000:
                 if (session == s1) {
                     s1 = null;
@@ -83,12 +65,13 @@ public class Endpoint {
                     s2 = null;
                 }
                 break;
+            case 1001:
             case 4001:
                 if (session == s1) {
-                    s2.getBasicRemote().sendObject(new Message(ConnectionType.ENDGAME, game.getGraveyard(), Winner.PLAYER2));
+                    s2.getBasicRemote().sendObject(new Message(ConnectionType.QUIT_GAME, Winner.PLAYER2));
                     s1 = null;
                 } else {
-                    s1.getBasicRemote().sendObject(new Message(ConnectionType.ENDGAME, game.getGraveyard(), Winner.PLAYER1));
+                    s1.getBasicRemote().sendObject(new Message(ConnectionType.QUIT_GAME, Winner.PLAYER1));
                     s2 = null;
                 }
                 break;

@@ -39,13 +39,17 @@ class GUI {
             case ConnectionType.MESSAGE:
                 /* Recebendo uma jogada */
                 this.movePiece(data);
+                if (data.winner !== Winner.NONE) {
+                    this.endGame(this.closeCodes.ENDGAME, data.winner);
+                }
                 break;
-            case ConnectionType.ENDGAME:
+            case ConnectionType.QUIT_GAME:
                 /* Fim do jogo */
-                this.printBoard(data.board);
-                this.printGraveyard(data.graveyard);
-                this.ws.close(this.closeCodes.ENDGAME.code, this.closeCodes.ENDGAME.description);
-                this.endGame(data.winner);
+                // this.printBoard(data.board);
+                // this.printGraveyard(data.graveyard);
+                // this.ws.close(this.closeCodes.ENDGAME.code, this.closeCodes.ENDGAME.description);
+                // this.endGame(data.winner);
+                this.endGame(1000, data.turn);
                 break;
         }
     }
@@ -72,7 +76,8 @@ class GUI {
         };
         let removePiece = td => {
             let img = td.firstChild;
-            img?.animate([{ opacity: 1 }, { opacity: 0 }], time);
+            let anim = img.animate([{ opacity: 1 }, { opacity: 0 }], time);
+            anim.onfinish = () => td.innerHTML = "";
         };
         let showPiece = (cell, piece, remove) => {
             let td = this.getTableData(cell);
@@ -89,29 +94,28 @@ class GUI {
         };
         if (data.attackResult === Winner.NONE) {
             animatePiece(beginCell, endCell);
-            let eTD = this.getTableData(endCell);
-            removePiece(eTD);
         } else if (data.attackResult === Winner.DRAW) {
             showPiece(beginCell, attackingPiece, true);
             showPiece(endCell, defendingPiece, true);
         } else {
             if (attackingPiece.player === data.attackResult) {
                 showPiece(beginCell, attackingPiece, false);
-                showPiece(endCell, defendingPiece, true);
-                animatePiece(beginCell, endCell);
+                showPiece(endCell, defendingPiece, false);
+                setTimeout(animatePiece, time, beginCell, endCell);
             } else {
-                showPiece(beginCell, attackingPiece, true);
+                showPiece(beginCell, attackingPiece, defendingPiece.armyPiece !== ArmyPiece.FLAG);
                 showPiece(endCell, defendingPiece, false);
             }
         }
         this.printGraveyard(data.graveyard);
         this.setMessage(data.turn === this.player ? "Your turn." : "Opponent's turn.");
     }
-    endGame(type) {
+    endGame(closeObj, winner) {
         this.unsetEvents();
+        this.ws.close(closeObj.code, closeObj.description);
         this.ws = null;
         this.setButtonText(true);
-        this.setMessage(`Game Over! ${(type === Winner.DRAW) ? "Draw!" : (type === this.player ? "You win!" : "You lose!")}`);
+        this.setMessage(`Game Over! ${(winner === Winner.DRAW) ? "Draw!" : (winner === this.player ? "You win!" : "You lose!")}`);
     }
     setButtonText(on) {
         let button = document.querySelector("input[type='button']");
