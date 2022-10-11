@@ -45,16 +45,12 @@ class GUI {
                 break;
             case ConnectionType.QUIT_GAME:
                 /* Fim do jogo */
-                // this.printBoard(data.board);
-                // this.printGraveyard(data.graveyard);
-                // this.ws.close(this.closeCodes.ENDGAME.code, this.closeCodes.ENDGAME.description);
-                // this.endGame(data.winner);
                 this.endGame(1000, data.turn);
                 break;
         }
     }
     movePiece(data) {
-        const time = 1000;
+        const time = 2000;
         let beginCell = data.attackingCell;
         let endCell = data.defendingCell;
         let attackingPiece = data.attackingPiece;
@@ -80,17 +76,11 @@ class GUI {
             anim.onfinish = () => td.innerHTML = "";
         };
         let showPiece = (cell, piece, remove) => {
-            let td = this.getTableData(cell);
-            let img = td.firstChild;
+            let eTD = this.getTableData(cell);
+            let img = eTD.firstChild;
             let source = img.src;
             img.src = `images/stratego-${piece.armyPiece.toLowerCase()}.svg`;
-            setTimeout(() => {
-                if (remove) {
-                    removePiece(td);
-                } else {
-                    img.src = source;
-                }
-            }, time);
+            setTimeout(() => remove ? removePiece(eTD) : img.src = source, time);
         };
         if (data.attackResult === Winner.NONE) {
             animatePiece(beginCell, endCell);
@@ -100,7 +90,7 @@ class GUI {
         } else {
             if (attackingPiece.player === data.attackResult) {
                 showPiece(beginCell, attackingPiece, false);
-                showPiece(endCell, defendingPiece, false);
+                showPiece(endCell, defendingPiece, true);
                 setTimeout(animatePiece, time, beginCell, endCell);
             } else {
                 showPiece(beginCell, attackingPiece, defendingPiece.armyPiece !== ArmyPiece.FLAG);
