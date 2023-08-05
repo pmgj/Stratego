@@ -97,7 +97,7 @@ public class Stratego {
     }
 
     private Winner isGameOver(Cell endCell) {
-        int dr = endCell.getX(), dc = endCell.getY();
+        int dr = endCell.x(), dc = endCell.y();
         /* Se um jogador não tem mais peças a mexer, perde o jogo */
         Function<PieceType, Long> numMovablePieces = player -> Arrays.stream(board).flatMap(row -> Arrays.stream(row))
                 .filter(p -> p.getPlayer() == player && p.getArmyPiece() != ArmyPiece.FLAG
@@ -151,7 +151,7 @@ public class Stratego {
     }
 
     private boolean canMove(Cell beginCell, Cell endCell) {
-        int or = beginCell.getX(), oc = beginCell.getY(), dr = endCell.getX(), dc = endCell.getY();
+        int or = beginCell.x(), oc = beginCell.y(), dr = endCell.x(), dc = endCell.y();
         /* Origem e destino devem ser diferentes */
         if (beginCell.equals(endCell)) {
             return false;
@@ -183,7 +183,7 @@ public class Stratego {
 
     private boolean onBoard(Cell cell) {
         BiFunction<Integer, Integer, Boolean> inLimit = (value, limit) -> value >= 0 && value < limit;
-        return (inLimit.apply(cell.getX(), this.rows) && inLimit.apply(cell.getY(), this.cols));
+        return (inLimit.apply(cell.x(), this.rows) && inLimit.apply(cell.y(), this.cols));
     }
 
     private boolean canMove(Player player, Cell beginCell, Cell endCell) {
@@ -191,7 +191,7 @@ public class Stratego {
         if (turn != player) {
             return false;
         }
-        int or = beginCell.getX(), oc = beginCell.getY(), dr = endCell.getX(), dc = endCell.getY();
+        int or = beginCell.x(), oc = beginCell.y(), dr = endCell.x(), dc = endCell.y();
         /* Está tentando jogar uma peça sua? */
         Piece p1 = board[or][oc];
         if ((p1.getPlayer() == PieceType.PLAYER1 && turn == Player.PLAYER2)
@@ -208,7 +208,7 @@ public class Stratego {
     }
 
     private boolean scoutRun(Cell beginCell, Cell endCell) {
-        int or = beginCell.getX(), oc = beginCell.getY(), dr = endCell.getX(), dc = endCell.getY();
+        int or = beginCell.x(), oc = beginCell.y(), dr = endCell.x(), dc = endCell.y();
         if (board[or][oc].getArmyPiece() == ArmyPiece.SCOUT) {
             boolean move = true;
             if (or == dr) {
@@ -246,7 +246,7 @@ public class Stratego {
     }
 
     public void move(Player player, Cell beginCell, Cell endCell) {
-        int or = beginCell.getX(), oc = beginCell.getY(), dr = endCell.getX(), dc = endCell.getY();
+        int or = beginCell.x(), oc = beginCell.y(), dr = endCell.x(), dc = endCell.y();
         /* Fim do jogo? */
         if (this.winner != Winner.NONE) {
             throw new IllegalArgumentException("This game is already finished.");

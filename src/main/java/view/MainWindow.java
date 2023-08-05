@@ -52,25 +52,24 @@ public class MainWindow extends JFrame {
         System.out.println(message);
         Message msg = JsonbBuilder.create().fromJson(message, Message.class);
         switch (msg.getType()) {
-            case OPEN:
+            case OPEN -> {
                 /* Informando cor da peça do usuário atual */
                 this.player = msg.getTurn();
-                break;
-            case START_BOARD:
-            case MESSAGE:
+            }
+            case START_BOARD, MESSAGE -> {
                 /* Recebendo o tabuleiro modificado */
                 String info = (this.player == msg.getTurn()) ? "É a sua vez de jogar."
                         : "É a vez do adversário de jogar.";
                 this.player = msg.getTurn();
                 lMessage.setText(info);
                 this.atualizarTabuleiro(msg.getBoard());
-                break;
-            case QUIT_GAME:
+            }
+            case QUIT_GAME -> {
                 /* Fim do jogo */
                 String info2 = (msg.getTurn() == player) ? "Você venceu!" : "Você perdeu!";
                 lMessage.setText(info2);
                 s.close();
-                break;
+            }
         }
     }
 

@@ -41,7 +41,7 @@ public class Endpoint {
 
     @OnMessage
     public void onMessage(Session session, MoveMessage message) throws IOException, EncodeException {
-        Cell beginCell = message.getBeginCell(), endCell = message.getEndCell();
+        Cell beginCell = message.beginCell(), endCell = message.endCell();
         try {
             game.move(session == s1 ? Player.PLAYER1 : Player.PLAYER2, beginCell, endCell);
             Message m = new Message(ConnectionType.MESSAGE, game);
@@ -57,16 +57,14 @@ public class Endpoint {
     @OnClose
     public void onClose(Session session, CloseReason reason) throws IOException, EncodeException {
         switch (reason.getCloseCode().getCode()) {
-            case 1000:
-            case 4000:
+            case 1000, 4000 -> {
                 if (session == s1) {
                     s1 = null;
                 } else {
                     s2 = null;
                 }
-                break;
-            case 1001:
-            case 4001:
+            }
+            case 1001, 4001 -> {
                 if (session == s1) {
                     s2.getBasicRemote().sendObject(new Message(ConnectionType.QUIT_GAME, Winner.PLAYER2));
                     s1 = null;
@@ -74,9 +72,10 @@ public class Endpoint {
                     s1.getBasicRemote().sendObject(new Message(ConnectionType.QUIT_GAME, Winner.PLAYER1));
                     s2 = null;
                 }
-                break;
-            default:
+            }
+            default -> {
                 System.out.println(String.format("Close code %d incorrect", reason.getCloseCode().getCode()));
+            }
         }
     }
 }
